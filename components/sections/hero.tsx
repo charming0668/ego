@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { BlurFade } from "@/components/magicui/blur-fade";
+import { withBasePath } from "@/lib/utils";
 
 export default function Hero() {
   return (
@@ -35,7 +36,7 @@ export default function Hero() {
         <BlurFade delay={0.08} direction="left" duration={0.55}>
           <figure className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-[0_24px_80px_rgba(30,64,175,0.10)]">
             <Image
-              src="/media/ego-vla-figures/egovla-teaser-01.svg"
+              src={withBasePath("/media/ego-vla-figures/egovla-teaser-01.svg")}
               alt="EgoVLA 从第一视角人类视频学习机器人操作的整体示意"
               width={3905}
               height={1370}

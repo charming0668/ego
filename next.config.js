@@ -1,5 +1,17 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === "production";
+const repo = "ego-vla-site-content";
+const basePath = isProd ? `/${repo}` : "";
+
 const nextConfig = {
+  output: "export",
+  basePath,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
+  images: {
+    unoptimized: true,
+  },
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 };
 

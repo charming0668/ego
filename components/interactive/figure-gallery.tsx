@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowsOut, X } from "@phosphor-icons/react";
 
 import { figures } from "@/content/site-data";
-import { cn } from "@/lib/utils";
+import { cn, withBasePath } from "@/lib/utils";
 
 type FigureGalleryProps = {
   figureIds: string[];
@@ -38,7 +38,7 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
       <div className="group relative flex min-h-64 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-2">
         <Image
           key={active.id}
-          src={active.src}
+          src={withBasePath(active.src)}
           alt={active.alt}
           width={1800}
           height={1080}
@@ -107,7 +107,7 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
         </div>
         <div className="overflow-auto rounded-xl bg-slate-50 p-2">
           <Image
-            src={active.src}
+            src={withBasePath(active.src)}
             alt={active.alt}
             width={1800}
             height={1080}
