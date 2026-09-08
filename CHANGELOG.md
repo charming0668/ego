@@ -18,4 +18,4 @@
 - Configured static export with basePath for GitHub Pages and added automated deployment workflow.
 - Renamed GitHub repository to ego and updated basePath configuration accordingly.
 - Upgraded method explorer to a full-width hero gallery with supporting parameter dashboard.
-- Implemented interactive gallery stabilization modes: fixed height (recommended), 16:9 ratio, and smooth height transition.
+- Finalized Scheme 1: locked exhibition gallery height to eliminate Cumulative Layout Shift (CLS).
