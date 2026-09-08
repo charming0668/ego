@@ -13,3 +13,5 @@
 - Redesigned benchmark information into structured cards with spec highlights and categorized items.
 - Removed the selection advice and source link sections per user feedback.
 - Relocated core formulas into the method spec panel on the left and revised the comparison section title.
+- Fixed initial image rendering in figure gallery by bypassing opacity masking and enabling unoptimized SVG/GIF streaming.
+- Removed redundant forward-transfer evaluation metric item from LIBERO specifications per user request.

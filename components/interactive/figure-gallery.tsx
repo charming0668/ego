@@ -17,16 +17,12 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
     .map((id) => figures.find((figure) => figure.id === id))
     .filter((figure): figure is NonNullable<typeof figure> => Boolean(figure));
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-  const [failed, setFailed] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const active = available[activeIndex] ?? available[0];
   const figureKey = figureIds.join(":");
 
   useEffect(() => {
     setActiveIndex(0);
-    setLoaded(false);
-    setFailed(false);
   }, [figureKey]);
 
   if (!active) {
@@ -37,42 +33,20 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
     );
   }
 
-  const selectFigure = (index: number) => {
-    setLoaded(false);
-    setFailed(false);
-    setActiveIndex(index);
-  };
-
-  const image = (
-    <Image
-      src={active.src}
-      alt={active.alt}
-      width={1800}
-      height={1080}
-      sizes="(max-width: 768px) 100vw, 58vw"
-      unoptimized={active.src.endsWith(".gif")}
-      onLoad={() => setLoaded(true)}
-      onError={() => setFailed(true)}
-      className={cn(
-        "h-auto max-h-[70dvh] w-full object-contain transition-opacity",
-        loaded ? "opacity-100" : "opacity-0",
-      )}
-    />
-  );
-
   return (
     <div>
-      <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        {!loaded && !failed ? (
-          <div className="absolute inset-0 animate-pulse bg-slate-100 motion-reduce:animate-none" />
-        ) : null}
-        {failed ? (
-          <div className="grid min-h-72 place-items-center px-6 text-center text-sm text-slate-500">
-            图像加载失败，请稍后刷新页面。
-          </div>
-        ) : (
-          image
-        )}
+      <div className="group relative flex min-h-64 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-2">
+        <Image
+          key={active.id}
+          src={active.src}
+          alt={active.alt}
+          width={1800}
+          height={1080}
+          priority
+          sizes="(max-width: 768px) 100vw, 58vw"
+          unoptimized={active.src.endsWith(".gif") || active.src.endsWith(".svg")}
+          className="h-auto max-h-[70dvh] w-full object-contain"
+        />
         <button
           type="button"
           onClick={() => dialogRef.current?.showModal()}
@@ -96,7 +70,7 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
               <button
                 key={figure.id}
                 type="button"
-                onClick={() => selectFigure(index)}
+                onClick={() => setActiveIndex(index)}
                 className={cn(
                   "size-8 rounded-lg border text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700",
                   activeIndex === index
@@ -131,7 +105,17 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
             <X size={20} aria-hidden="true" />
           </button>
         </div>
-        <div className="overflow-auto rounded-xl bg-slate-50">{image}</div>
+        <div className="overflow-auto rounded-xl bg-slate-50 p-2">
+          <Image
+            src={active.src}
+            alt={active.alt}
+            width={1800}
+            height={1080}
+            sizes="90vw"
+            unoptimized={active.src.endsWith(".gif") || active.src.endsWith(".svg")}
+            className="h-auto max-h-[82dvh] w-full object-contain"
+          />
+        </div>
       </dialog>
     </div>
   );

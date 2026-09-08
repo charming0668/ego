@@ -213,7 +213,7 @@ export const benchmarks: Benchmark[] = [
     ],
     setup: ["MuJoCo / robosuite 仿真引擎", "Franka Panda：7-DoF 机械臂 + 平行夹爪", "相机视点：Agentview（全局）+ Eye-in-Hand（腕部）"],
     tasks: ["130 个语言条件任务（涵盖 4 个核心测试套件）", "Spatial、Object、Goal 套件各 10 个任务", "LIBERO-100 / Long 长时序复合任务套件 100 个"],
-    metrics: ["闭环任务成功率（Success Rate）", "前向迁移能力（Forward Transfer）与抗遗忘评估"],
+    metrics: ["闭环任务成功率（Success Rate）"],
     figures: ["libero-framework", "libero-suites"],
     sources: ["libero-paper", "libero-project", "libero-docs"],
   },
