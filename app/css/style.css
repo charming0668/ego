@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC",
+    "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--color-slate-200, currentColor);
+  }
+
+  html {
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    text-rendering: optimizeLegibility;
+  }
+
+  button,
+  summary,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-blue-200);
+    color: var(--color-slate-950);
+  }
+}
+
+/* Cards use 16px radii; compact controls use 12px radii. */
+dialog::backdrop {
+  background: rgb(15 23 42 / 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.katex-display {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
