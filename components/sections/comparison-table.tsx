@@ -7,8 +7,8 @@ export default function ComparisonTable() {
     <section id="comparison" className="scroll-mt-20 border-y border-blue-100 bg-blue-50/60 py-16 sm:py-20">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="差异不在 48 还是 80"
-          description="真正决定迁移方式的是坐标系、动作定义，以及人体数据如何接入机器人阶段。"
+          title="五种方法多维对比"
+          description="系统比较各方法在输入视角、坐标系定义、动作空间表征、训练目标及人机衔接策略上的异同。"
         />
         <div className="mt-8 overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-[0_18px_50px_rgba(29,78,216,0.07)]">
           <table className="w-full min-w-[1040px] border-collapse text-left text-sm">

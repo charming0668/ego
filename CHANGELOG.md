@@ -12,3 +12,4 @@
 - Fixed mixed Chinese and LaTeX content so every visible formula is rendered through KaTeX.
 - Redesigned benchmark information into structured cards with spec highlights and categorized items.
 - Removed the selection advice and source link sections per user feedback.
+- Relocated core formulas into the method spec panel on the left and revised the comparison section title.

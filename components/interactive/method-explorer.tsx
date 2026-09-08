@@ -108,6 +108,20 @@ export default function MethodExplorer() {
                     <MathText value={method.actionSpace} />
                   </div>
                 </div>
+                {method.formulas.length ? (
+                  <div>
+                    <p className="mb-2 text-sm font-semibold text-slate-900">核心公式</p>
+                    <div className="grid gap-2.5">
+                      {method.formulas.map((formula) => (
+                        <div
+                          key={formula}
+                          className="overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-900"
+                          dangerouslySetInnerHTML={{ __html: renderFormula(formula) }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">坐标系</p>
@@ -160,20 +174,6 @@ export default function MethodExplorer() {
 
             <div className="bg-slate-50 p-4 sm:p-6 lg:p-8">
               <FigureGallery figureIds={method.figures} label={method.name} />
-              {method.formulas.length ? (
-                <div className="mt-5">
-                  <p className="mb-2 text-sm font-semibold text-slate-900">核心公式</p>
-                  <div className="grid gap-3">
-                    {method.formulas.map((formula) => (
-                      <div
-                        key={formula}
-                        className="overflow-x-auto rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-900"
-                        dangerouslySetInnerHTML={{ __html: renderFormula(formula) }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
             </div>
           </div>
         </div>
