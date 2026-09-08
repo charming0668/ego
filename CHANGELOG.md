@@ -9,3 +9,4 @@
 - Preserved the full source document and moved research media under `public/media` for web delivery.
 - Pinned Node 24.14.1, pnpm 10.15.1, and aligned Next.js with `@next/mdx` at 15.5.25.
 - Overrode vulnerable transitive PostCSS and Nano ID versions with patched releases.
+- Fixed mixed Chinese and LaTeX content so every visible formula is rendered through KaTeX.

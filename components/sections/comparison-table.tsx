@@ -1,24 +1,6 @@
-import katex from "katex";
-
+import MathText from "@/components/math-text";
 import SectionHeading from "@/components/sections/section-heading";
 import { comparisonRows, methods } from "@/content/site-data";
-
-function ComparisonValue({ value }: { value: string }) {
-  if (!value) return "未给出";
-  if (!value.includes("\\")) return value;
-
-  return (
-    <span
-      dangerouslySetInnerHTML={{
-        __html: katex.renderToString(value, {
-          displayMode: false,
-          throwOnError: false,
-          strict: false,
-        }),
-      }}
-    />
-  );
-}
 
 export default function ComparisonTable() {
   return (
@@ -50,7 +32,7 @@ export default function ComparisonTable() {
                   </th>
                   {methods.map((method) => (
                     <td key={method.id} className="px-5 py-4 leading-6 text-slate-600">
-                      <ComparisonValue value={row.values[method.id]} />
+                      <MathText value={row.values[method.id] ?? "未给出"} />
                     </td>
                   ))}
                 </tr>

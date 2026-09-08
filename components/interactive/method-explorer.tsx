@@ -4,6 +4,7 @@ import { useState } from "react";
 import katex from "katex";
 
 import FigureGallery from "@/components/interactive/figure-gallery";
+import MathText from "@/components/math-text";
 import SectionHeading from "@/components/sections/section-heading";
 import { methods } from "@/content/site-data";
 import { cn } from "@/lib/utils";
@@ -103,14 +104,15 @@ export default function MethodExplorer() {
                   <p className="mb-2 text-sm font-semibold text-slate-900">Action space</p>
                   <div
                     className="overflow-x-auto rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-blue-900"
-                    dangerouslySetInnerHTML={{ __html: renderFormula(method.actionSpace) }}
-                  />
+                  >
+                    <MathText value={method.actionSpace} />
+                  </div>
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">坐标系</p>
                     <p className="mt-2 text-sm leading-6 text-slate-600">
-                      {method.coordinateFrame}
+                      <MathText value={method.coordinateFrame} />
                     </p>
                   </div>
                   <div>
@@ -129,16 +131,20 @@ export default function MethodExplorer() {
                     <div>
                       <p className="font-semibold text-slate-900">数据</p>
                       <ul className="mt-2 space-y-2">
-                        {method.data.map((item) => (
-                          <li key={item}>{item}</li>
+                        {method.data.map((item, index) => (
+                          <li key={index}>
+                            <MathText value={item} />
+                          </li>
                         ))}
                       </ul>
                     </div>
                     <div>
                       <p className="font-semibold text-slate-900">训练</p>
                       <ul className="mt-2 space-y-2">
-                        {method.training.map((item) => (
-                          <li key={item}>{item}</li>
+                        {method.training.map((item, index) => (
+                          <li key={index}>
+                            <MathText value={item} />
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -154,13 +160,18 @@ export default function MethodExplorer() {
 
             <div className="bg-slate-50 p-4 sm:p-6 lg:p-8">
               <FigureGallery figureIds={method.figures} label={method.name} />
-              {method.formulas[0] ? (
+              {method.formulas.length ? (
                 <div className="mt-5">
-                  <p className="mb-2 text-sm font-semibold text-slate-900">核心目标</p>
-                  <div
-                    className="overflow-x-auto rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-900"
-                    dangerouslySetInnerHTML={{ __html: renderFormula(method.formulas[0]) }}
-                  />
+                  <p className="mb-2 text-sm font-semibold text-slate-900">核心公式</p>
+                  <div className="grid gap-3">
+                    {method.formulas.map((formula) => (
+                      <div
+                        key={formula}
+                        className="overflow-x-auto rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-900"
+                        dangerouslySetInnerHTML={{ __html: renderFormula(formula) }}
+                      />
+                    ))}
+                  </div>
                 </div>
               ) : null}
             </div>

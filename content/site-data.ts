@@ -15,14 +15,17 @@ export type Source = {
   note?: string;
 };
 
+export type MathSegment = { math: string };
+export type RichText = string | Array<string | MathSegment>;
+
 export type Method = {
   id: string;
   name: string;
   summary: string;
-  data: string[];
-  actionSpace: string;
-  coordinateFrame: string;
-  training: string[];
+  data: RichText[];
+  actionSpace: RichText;
+  coordinateFrame: RichText;
+  training: RichText[];
   deployment: string;
   keyNumbers: string[];
   formulas: string[];
@@ -39,8 +42,10 @@ export type PipelineStep = {
 
 export type ComparisonRow = {
   dimension: string;
-  values: Record<string, string>;
+  values: Record<string, RichText>;
 };
+
+const math = (value: string): MathSegment => ({ math: value });
 
 export type Benchmark = {
   id: string;
@@ -86,9 +91,13 @@ export const methods: Method[] = [
     name: "EgoVLA",
     summary: "最接近标准 VLM-VLA 的人体 ego 预训练方案，轨迹 decoder 直接回归未来动作。",
     data: ["公开头戴 RGB、语言与 proprio", "30 Hz，未来 30 步，约 1 s chunk", "MANO 与双腕 rot6D"],
-    actionSpace: String.raw`48=6_{\mathrm{EE}}+30_{\mathrm{hand}}+12_{\mathrm{rot6d}}`,
+    actionSpace: [math(String.raw`48=6_{\mathrm{EE}}+30_{\mathrm{hand}}+12_{\mathrm{rot6d}}`)],
     coordinateFrame: "当前相机系腕部 3D 位姿",
-    training: ["人体 ego 预训练", "仿真或机器人演示微调", String.raw`加权回归：\mathcal{L}=20\mathcal{L}_{\mathrm{ee}}+5\mathcal{L}_{\mathrm{hand}}+5\mathcal{L}_{\mathrm{rot}}`],
+    training: [
+      "人体 ego 预训练",
+      "仿真或机器人演示微调",
+      ["加权回归：", math(String.raw`\mathcal{L}=20\mathcal{L}_{\mathrm{ee}}+5\mathcal{L}_{\mathrm{hand}}+5\mathcal{L}_{\mathrm{rot}}`)],
+    ],
     deployment: "MANO 经 IK 得到 EEF，指尖映射到机器人手关节。",
     keyNumbers: ["30 Hz", "30-step chunk", "48-D action"],
     formulas: [String.raw`\mathcal{L}=20\mathcal{L}_{\mathrm{ee}}+5\mathcal{L}_{\mathrm{hand}}+5\mathcal{L}_{\mathrm{rot}}`],
@@ -100,7 +109,12 @@ export const methods: Method[] = [
     name: "H-RDT",
     summary: "在 EgoDex 人手动作上做 flow matching，再替换 action head 适配双臂机器人。",
     data: ["Apple EgoDex 头戴 RGB 与双手 3D", "单帧 1080×1920", "预计算 T5 language embedding"],
-    actionSpace: String.raw`(16,48)，每手 24=腕3+rot6D6+5\times3 指尖`,
+    actionSpace: [
+      math(String.raw`(16,48)`),
+      "，每手 24 = 腕 3 + rot6D 6 + ",
+      math(String.raw`5\times3`),
+      " 指尖",
+    ],
     coordinateFrame: "EgoDex ARKit origin 的地面静止系",
     training: ["48-D 人手动作 flow matching", "微调时冻结视觉与语言", "按机器人维度重初始化 action head"],
     deployment: "机器人阶段改用机器人 action 维度，不能直接复用人手 48-D 头。",
@@ -113,10 +127,25 @@ export const methods: Method[] = [
     id: "egohumanoid",
     name: "EgoHumanoid",
     summary: "将野外头戴数据做视角和动作对齐，与少量机器人遥操作样本共同训练。",
-    data: ["头左相机 RGB", String.raw`双臂 \Delta\mathrm{EEF}、身高、导航和手开合`, "人侧另有 VR，机器人与人均使用头戴相机"],
-    actionSpace: String.raw`(H,12)+导航(H,3)+身高(H,1)+手开合`,
-    coordinateFrame: String.raw`对齐机器人头相机后的相对 \Delta\mathrm{EEF}`,
-    training: ["单阶段按权重混合人体与机器人样本", String.raw`\pi_{0.5} flow matching`, String.raw`\mathbf{x}_t=t\boldsymbol{\varepsilon}+(1-t)\mathbf{a}`],
+    data: [
+      "头左相机 RGB",
+      ["双臂 ", math(String.raw`\Delta\mathrm{EEF}`), "、身高、导航和手开合"],
+      "人侧另有 VR，机器人与人均使用头戴相机",
+    ],
+    actionSpace: [
+      math(String.raw`(H,12)`),
+      " + 导航 ",
+      math(String.raw`(H,3)`),
+      " + 身高 ",
+      math(String.raw`(H,1)`),
+      " + 手开合",
+    ],
+    coordinateFrame: ["对齐机器人头相机后的相对 ", math(String.raw`\Delta\mathrm{EEF}`)],
+    training: [
+      "单阶段按权重混合人体与机器人样本",
+      [math(String.raw`\pi_{0.5}`), " flow matching"],
+      [math(String.raw`\mathbf{x}_t=t\boldsymbol{\varepsilon}+(1-t)\mathbf{a}`)],
+    ],
     deployment: "输出未来 H 步双臂 EEF 增量、底盘导航与夹爪开合。",
     keyNumbers: ["H-step horizon", "双臂 12-D EEF", "3-D navigation"],
     formulas: [String.raw`\mathbf{u}_t=\boldsymbol{\varepsilon}-\mathbf{a}`, String.raw`\mathrm{MSE}(\hat{\mathbf{v}}_t,\mathbf{u}_t)`],
@@ -128,9 +157,13 @@ export const methods: Method[] = [
     name: "Qwen-RobotManip",
     summary: "用统一 80-D canonical action 对齐异构真机和人体数据，再用 H2R 合成多种双臂形态。",
     data: ["EgoDex 732 h、VITRA 247 h、EgoVerse 954 h，人体合计约 1,933 h", "H2R 扩展约 24,808 h、15 种双臂形态", "开源真机约 11,420 h，预训练合计约 38,100 h"],
-    actionSpace: String.raw`80=2\times(7\ \mathrm{joint}+3\ \mathrm{EEF}+6\ \mathrm{rot6D}+1\ \mathrm{gripper}+12\ \mathrm{hand})+22\ \mathrm{reserved}`,
+    actionSpace: [math(String.raw`80=2\times(7\ \mathrm{joint}+3\ \mathrm{EEF}+6\ \mathrm{rot6D}+1\ \mathrm{gripper}+12\ \mathrm{hand})+22\ \mathrm{reserved}`)],
     coordinateFrame: "EEF 使用相机系 delta pose；无标定时退回基座相对量",
-    training: ["Qwen3.5-4B VLM + 10-layer DiT", String.raw`flow matching：\mathbf{x}_t=(1-t)\boldsymbol{\varepsilon}+t\mathbf{a}`, String.raw`\lambda=0.1` + " VLM next-token，约 9:1 VLA/VL 双流"],
+    training: [
+      "Qwen3.5-4B VLM + 10-layer DiT",
+      ["flow matching：", math(String.raw`\mathbf{x}_t=(1-t)\boldsymbol{\varepsilon}+t\mathbf{a}`)],
+      [math(String.raw`\lambda=0.1`), " VLM next-token，约 9:1 VLA/VL 双流"],
+    ],
     deployment: "人手关键点转夹爪位姿，经过基座搜索、MuJoCo IK 与视觉合成后直接占用同一 80-D 槽位。",
     keyNumbers: ["80-D canonical", "15 embodiments", "4-step Euler inference"],
     formulas: [String.raw`\mathbf{k}_{\mathrm{vf}}=0.7\mathbf{k}_{\mathrm{index}}+0.3\mathbf{k}_{\mathrm{middle}}`, String.raw`\mathbf{x}_t=(1-t)\boldsymbol{\varepsilon}+t\mathbf{a}`],
@@ -142,8 +175,11 @@ export const methods: Method[] = [
     name: "EgoScale",
     summary: "先用大规模野外 ego 学相对腕和手关节，再用对齐人机 play 做 mid-training，最后少量机器人 post-train。",
     data: ["Stage I：约 20,854 h 野外 ego + EgoDex 829 h", "Stage II：344 桌面任务，约 50 h 人 + 4 h 机器人", "SLAM 相机位姿与 21 关键点，不是电机指令"],
-    actionSpace: String.raw`\Delta\mathbf{W}+22\text{-DoF hand}`,
-    coordinateFrame: String.raw`\Delta\mathbf{W}^{t}=(\mathbf{W}_{w}^{0})^{-1}\mathbf{W}_{w}^{t}，chunk 首帧相对世界系腕`,
+    actionSpace: [math(String.raw`\Delta\mathbf{W}+22\text{-DoF hand}`)],
+    coordinateFrame: [
+      math(String.raw`\Delta\mathbf{W}^{t}=(\mathbf{W}_{w}^{0})^{-1}\mathbf{W}_{w}^{t}`),
+      "，chunk 首帧相对世界系腕",
+    ],
     training: ["I 人体预训练，全模型解冻", "II 对齐人机 play，冻结 VLM backbone", "III 机器人演示 post-train，腕表示始终共享"],
     deployment: "相对腕直接监督 EEF；手部 decoder 可从 Sharpa 22-DoF 换到低自由度本体。",
     keyNumbers: ["20,854 h + 829 h Stage I", "344 tasks", "22-DoF hand"],
@@ -156,8 +192,8 @@ export const methods: Method[] = [
 export const comparisonRows: ComparisonRow[] = [
   { dimension: "ego 相机", values: { egovla: "公开头戴", hrdt: "AVP 头戴", egohumanoid: "头戴", qwen: "EgoDex/VITRA/EgoVerse", egoscale: "野外头戴 + EgoDex" } },
   { dimension: "语言", values: { egovla: "VLM 文本", hrdt: "预计算 T5", egohumanoid: "prompt", qwen: "结构化 prompt", egoscale: "语言指令" } },
-  { dimension: "action 坐标系", values: { egovla: "当前相机系", hrdt: "ARKit origin", egohumanoid: String.raw`对齐后的 \Delta\mathrm{EEF}`, qwen: "相机系 delta pose", egoscale: String.raw`世界系相对腕 \Delta W` } },
-  { dimension: "action shape", values: { egovla: String.raw`(30,48)`, hrdt: String.raw`(16,48)`, egohumanoid: String.raw`(H,12+1+3+hand)`, qwen: String.raw`(T,80)，T 未给出`, egoscale: String.raw`(H,\Delta W+22)，H 未给出` } },
+  { dimension: "action 坐标系", values: { egovla: "当前相机系", hrdt: "ARKit origin", egohumanoid: ["对齐后的 ", math(String.raw`\Delta\mathrm{EEF}`)], qwen: "相机系 delta pose", egoscale: ["世界系相对腕 ", math(String.raw`\Delta W`)] } },
+  { dimension: "action shape", values: { egovla: [math(String.raw`(30,48)`)], hrdt: [math(String.raw`(16,48)`)], egohumanoid: [math(String.raw`(H,12+1+3+\mathrm{hand})`)], qwen: [math(String.raw`(T,80)`), "，T 未给出"], egoscale: [math(String.raw`(H,\Delta W+22)`), "，H 未给出"] } },
   { dimension: "训练目标", values: { egovla: "加权回归", hrdt: "flow matching", egohumanoid: "flow matching", qwen: "flow + VLM 共训", egoscale: "flow matching" } },
   { dimension: "人机衔接", values: { egovla: "同头仿真微调", hrdt: "换 action head", egohumanoid: "加权共训", qwen: "H2R 同槽位", egoscale: "预训练→对齐→post-train" } },
 ];
