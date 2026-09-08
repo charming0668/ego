@@ -17,3 +17,4 @@
 - Removed redundant forward-transfer evaluation metric item from LIBERO specifications per user request.
 - Configured static export with basePath for GitHub Pages and added automated deployment workflow.
 - Renamed GitHub repository to ego and updated basePath configuration accordingly.
+- Upgraded method explorer to a full-width hero gallery with supporting parameter dashboard.

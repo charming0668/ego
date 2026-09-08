@@ -81,100 +81,120 @@ export default function MethodExplorer() {
           aria-labelledby={`method-tab-${activeIndex}`}
           className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,0.06)]"
         >
-          <div className="grid divide-y divide-slate-200 lg:grid-cols-[0.84fr_1.16fr] lg:divide-x lg:divide-y-0">
-            <div className="p-5 sm:p-7 lg:p-8">
-              <h3 className="text-3xl font-semibold tracking-[-0.035em] text-slate-950">
-                {method.name}
-              </h3>
-              <p className="mt-3 text-base leading-7 text-slate-600">{method.summary}</p>
-
-              <dl className="mt-7 grid grid-cols-3 divide-x divide-slate-200 border-y border-slate-200 py-4">
+          {/* 1. Header Bar: Title, Summary and Key Metrics */}
+          <div className="border-b border-slate-200 bg-white p-6 sm:p-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h3 className="text-3xl font-semibold tracking-[-0.035em] text-slate-950">
+                  {method.name}
+                </h3>
+                <p className="mt-2 max-w-3xl text-base leading-relaxed text-slate-600">
+                  {method.summary}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 lg:justify-end">
                 {method.keyNumbers.map((number) => (
-                  <div key={number} className="px-3 first:pl-0 last:pr-0">
-                    <dt className="sr-only">关键指标</dt>
-                    <dd className="text-sm font-semibold text-slate-900 sm:text-base">
-                      {number}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-
-              <div className="mt-7 space-y-6">
-                <div>
-                  <p className="mb-2 text-sm font-semibold text-slate-900">Action space</p>
-                  <div
-                    className="overflow-x-auto rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-blue-900"
+                  <span
+                    key={number}
+                    className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-800"
                   >
-                    <MathText value={method.actionSpace} />
-                  </div>
-                </div>
-                {method.formulas.length ? (
-                  <div>
-                    <p className="mb-2 text-sm font-semibold text-slate-900">核心公式</p>
-                    <div className="grid gap-2.5">
-                      {method.formulas.map((formula) => (
-                        <div
-                          key={formula}
-                          className="overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-900"
-                          dangerouslySetInnerHTML={{ __html: renderFormula(formula) }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">坐标系</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      <MathText value={method.coordinateFrame} />
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">机器人衔接</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      {method.deployment}
-                    </p>
-                  </div>
-                </div>
+                    {number}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
 
-                <details className="group rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <summary className="cursor-pointer font-semibold text-slate-900 marker:text-blue-700">
-                    展开数据与训练细节
-                  </summary>
-                  <div className="mt-4 grid gap-5 text-sm leading-6 text-slate-600 sm:grid-cols-2">
-                    <div>
-                      <p className="font-semibold text-slate-900">数据</p>
-                      <ul className="mt-2 space-y-2">
-                        {method.data.map((item, index) => (
-                          <li key={index}>
-                            <MathText value={item} />
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">训练</p>
-                      <ul className="mt-2 space-y-2">
-                        {method.training.map((item, index) => (
-                          <li key={index}>
-                            <MathText value={item} />
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+          {/* 2. Main Hero Protagonist Area: Full-Width Figure Gallery */}
+          <div className="border-b border-slate-200 bg-slate-50/60 p-4 sm:p-6 lg:p-8">
+            <FigureGallery figureIds={method.figures} label={method.name} />
+          </div>
+
+          {/* 3. Supporting Specification Dashboard: 3 Structured Columns */}
+          <div className="p-6 sm:p-8">
+            <div className="grid gap-5 md:grid-cols-3">
+              {/* Action space */}
+              <div className="flex flex-col justify-between rounded-xl border border-blue-100 bg-blue-50/50 p-5 shadow-2xs">
+                <span className="text-xs font-semibold text-blue-700">
+                  动作空间 (Action Space)
+                </span>
+                <div className="mt-3 overflow-x-auto rounded-lg border border-blue-200/60 bg-white p-3.5 text-blue-950 shadow-xs">
+                  <MathText value={method.actionSpace} />
+                </div>
+              </div>
+
+              {/* 坐标系与机器人衔接 */}
+              <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-5 shadow-2xs space-y-3.5">
+                <div>
+                  <span className="text-xs font-semibold text-slate-500">
+                    坐标系定义
+                  </span>
+                  <div className="mt-1.5 text-sm leading-relaxed text-slate-800">
+                    <MathText value={method.coordinateFrame} />
                   </div>
-                  {method.caveats.length ? (
-                    <p className="mt-4 border-t border-slate-200 pt-4 text-sm leading-6 text-slate-500">
-                      {method.caveats.join(" ")}
-                    </p>
-                  ) : null}
-                </details>
+                </div>
+                <div className="border-t border-slate-100 pt-3">
+                  <span className="text-xs font-semibold text-slate-500">
+                    机器人衔接策略
+                  </span>
+                  <div className="mt-1.5 text-sm leading-relaxed text-slate-800">
+                    {method.deployment}
+                  </div>
+                </div>
+              </div>
+
+              {/* 核心公式 */}
+              <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+                <span className="text-xs font-semibold text-slate-500">
+                  核心训练目标 / 公式
+                </span>
+                <div className="mt-3 space-y-2">
+                  {method.formulas.map((formula) => (
+                    <div
+                      key={formula}
+                      className="overflow-x-auto rounded-lg border border-slate-200/80 bg-slate-50 px-3 py-2 text-slate-900"
+                      dangerouslySetInnerHTML={{ __html: renderFormula(formula) }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 sm:p-6 lg:p-8">
-              <FigureGallery figureIds={method.figures} label={method.name} />
-            </div>
+            {/* Foldable details */}
+            <details className="group mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <summary className="cursor-pointer font-semibold text-slate-900 marker:text-blue-700">
+                展开数据规模与训练细节
+              </summary>
+              <div className="mt-4 grid gap-5 text-sm leading-6 text-slate-600 sm:grid-cols-2">
+                <div>
+                  <p className="font-semibold text-slate-900">数据规模与来源</p>
+                  <ul className="mt-2 space-y-2">
+                    {method.data.map((item, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-blue-700" />
+                        <span><MathText value={item} /></span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">训练策略与架构</p>
+                  <ul className="mt-2 space-y-2">
+                    {method.training.map((item, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-blue-700" />
+                        <span><MathText value={item} /></span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              {method.caveats.length ? (
+                <p className="mt-4 border-t border-slate-200 pt-4 text-sm leading-6 text-slate-500">
+                  {method.caveats.join(" ")}
+                </p>
+              ) : null}
+            </details>
           </div>
         </div>
       </div>

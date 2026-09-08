@@ -35,7 +35,7 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
 
   return (
     <div>
-      <div className="group relative flex min-h-64 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-2">
+      <div className="group relative flex min-h-[320px] sm:min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-3 sm:p-4 shadow-xs">
         <Image
           key={active.id}
           src={withBasePath(active.src)}
@@ -43,39 +43,40 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
           width={1800}
           height={1080}
           priority
-          sizes="(max-width: 768px) 100vw, 58vw"
+          sizes="(max-width: 768px) 100vw, 95vw"
           unoptimized={active.src.endsWith(".gif") || active.src.endsWith(".svg")}
-          className="h-auto max-h-[70dvh] w-full object-contain"
+          className="h-auto max-h-[720px] w-full object-contain"
         />
         <button
           type="button"
           onClick={() => dialogRef.current?.showModal()}
-          className="absolute right-3 bottom-3 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white/95 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 active:translate-y-px"
+          className="absolute right-4 bottom-4 inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white/95 px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-md backdrop-blur hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 active:translate-y-px"
           aria-label={`放大查看${active.caption}`}
         >
           <ArrowsOut size={16} aria-hidden="true" />
           放大
         </button>
       </div>
-      <div className="mt-3 flex items-start justify-between gap-4">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-slate-800">{active.caption}</p>
+          <p className="text-base font-semibold text-slate-900">{active.caption}</p>
           {active.source ? (
-            <p className="mt-1 text-xs text-slate-500">外部补充图，来源见资料列表。</p>
+            <p className="mt-0.5 text-xs text-slate-500">外部补充图，来源见资料列表。</p>
           ) : null}
         </div>
         {available.length > 1 ? (
-          <div className="flex flex-wrap justify-end gap-2" aria-label={`${label}图集`}>
+          <div className="flex flex-wrap items-center gap-2" aria-label={`${label}图集`}>
+            <span className="text-xs font-medium text-slate-400 mr-1">切换图解:</span>
             {available.map((figure, index) => (
               <button
                 key={figure.id}
                 type="button"
                 onClick={() => setActiveIndex(index)}
                 className={cn(
-                  "size-8 rounded-lg border text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700",
+                  "min-w-8 h-8 px-2.5 rounded-lg border text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 active:translate-y-px transition-colors",
                   activeIndex === index
-                    ? "border-blue-700 bg-blue-700 text-white"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-blue-300",
+                    ? "border-blue-700 bg-blue-700 text-white shadow-xs"
+                    : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-slate-950",
                 )}
                 aria-label={`查看${figure.caption}`}
                 aria-pressed={activeIndex === index}
