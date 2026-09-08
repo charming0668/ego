@@ -17,9 +17,6 @@ export default function Footer() {
           <a className="hover:text-blue-700" href="#benchmarks">
             基准
           </a>
-          <a className="hover:text-blue-700" href="#sources">
-            来源
-          </a>
           <span className="text-slate-400">更新于 2026-09-06</span>
         </div>
       </div>

@@ -50,7 +50,9 @@ const math = (value: string): MathSegment => ({ math: value });
 export type Benchmark = {
   id: string;
   name: string;
+  badge: string;
   positioning: string;
+  stats: { label: string; value: string }[];
   setup: string[];
   tasks: string[];
   metrics: string[];
@@ -202,20 +204,32 @@ export const benchmarks: Benchmark[] = [
   {
     id: "libero",
     name: "LIBERO",
-    positioning: "单臂标准标尺，重点是持续学习中的知识迁移与抗遗忘。",
-    setup: ["MuJoCo/robosuite", "Franka Panda：7-DoF + 平行夹爪", "Agentview + Eye-in-Hand"],
-    tasks: ["130 个语言条件任务", "Spatial、Object、Goal 各 10 个", "LIBERO-100/Long 100 个，含 10 个长时序任务"],
-    metrics: ["闭环任务成功率（Success Rate）", "7-D EEF 增量控制"],
+    badge: "单臂基准 · 持续学习与知识迁移",
+    positioning: "单臂标准标尺，评估策略在多任务序列中的知识迁移与抗灾难性遗忘能力。",
+    stats: [
+      { label: "本体形态", value: "Franka 7-DoF 单臂" },
+      { label: "任务规模", value: "130 个多阶段任务" },
+      { label: "控制格式", value: "7-D EEF 增量控制" },
+    ],
+    setup: ["MuJoCo / robosuite 仿真引擎", "Franka Panda：7-DoF 机械臂 + 平行夹爪", "相机视点：Agentview（全局）+ Eye-in-Hand（腕部）"],
+    tasks: ["130 个语言条件任务（涵盖 4 个核心测试套件）", "Spatial、Object、Goal 套件各 10 个任务", "LIBERO-100 / Long 长时序复合任务套件 100 个"],
+    metrics: ["闭环任务成功率（Success Rate）", "前向迁移能力（Forward Transfer）与抗遗忘评估"],
     figures: ["libero-framework", "libero-suites"],
     sources: ["libero-paper", "libero-project", "libero-docs"],
   },
   {
     id: "robotwin-2",
     name: "RoboTwin 2.0",
-    positioning: "双臂协同与强域随机化基准，适合第一人称数据到真机的迁移检验。",
-    setup: ["SAPIEN/PhysX", "Aloha-AgileX、ARX-X5、Piper、Franka、UR5 双臂", "Overhead + 左右双腕相机"],
-    tasks: ["50 个高难度双臂协作任务", "RoboTwin-OD：147 类、731 个物体、44 个可动关节体", "非对称协作、动态交接、柔性体交互"],
-    metrics: ["Clean 成功率", "强随机化成功率", "Sim-to-Real 零样本与少样本成功率", "5 维 DR：杂乱度、光照、背景、台面高度、语言"],
+    badge: "双臂基准 · 强域随机化与真机迁移",
+    positioning: "双臂协作与真实世界强域随机化基准，适合检验第一人称数据向真机控制的迁移效果。",
+    stats: [
+      { label: "支持形态", value: "5 种主流双臂形态" },
+      { label: "任务库", value: "50 个高难双臂任务" },
+      { label: "资产库", value: "731 物体 · 44 关节体" },
+    ],
+    setup: ["SAPIEN / PhysX 高保真物理仿真引擎", "支持 Aloha-AgileX、ARX-X5、Piper、Franka、UR5 双臂", "相机配置：Overhead（俯视高机位）+ 左右双腕相机"],
+    tasks: ["50 个高难度双臂协作任务（非对称协作、动态交接、柔性体交互）", "RoboTwin-OD：147 类物体、731 个实例、44 个可动关节体资产", "真实家庭与工业操作场景，支持广泛扰动测试"],
+    metrics: ["Clean 标准环境评测成功率", "强随机化成功率（5 维 DR：杂乱度/光照/背景/台高/语言）", "Sim-to-Real 零样本与少样本真机迁移成功率"],
     figures: ["robotwin-50-tasks", "robotwin-cross-embodiment", "robotwin-od", "robotwin-randomization"],
     sources: ["robotwin-project", "robotwin-docs"],
   },

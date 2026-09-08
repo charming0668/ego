@@ -5,7 +5,6 @@ const links = [
   { href: "#methods", label: "五种方法" },
   { href: "#comparison", label: "方法对照" },
   { href: "#benchmarks", label: "评测基准" },
-  { href: "#sources", label: "资料来源" },
 ] as const;
 
 export default function Header() {

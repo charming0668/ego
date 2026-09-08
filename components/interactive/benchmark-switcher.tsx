@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Robot, Cube, Gauge } from "@phosphor-icons/react";
 
 import FigureGallery from "@/components/interactive/figure-gallery";
 import SectionHeading from "@/components/sections/section-heading";
@@ -47,28 +48,81 @@ export default function BenchmarkSwitcher() {
           aria-labelledby={`benchmark-tab-${activeIndex}`}
           className="mt-5 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-start"
         >
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-7">
-            <h3 className="text-3xl font-semibold tracking-[-0.035em] text-slate-950">
-              {benchmark.name}
-            </h3>
-            <p className="mt-3 text-base leading-7 text-slate-600">
-              {benchmark.positioning}
-            </p>
-            <div className="mt-7 space-y-6">
-              {[
-                ["环境与输入", benchmark.setup],
-                ["任务组成", benchmark.tasks],
-                ["评测指标", benchmark.metrics],
-              ].map(([title, items]) => (
-                <div key={title as string}>
-                  <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
-                  <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-600">
-                    {(items as string[]).map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+          <div className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-5 sm:p-7 shadow-xs">
+            <div>
+              <span className="inline-flex items-center rounded-md border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                {benchmark.badge}
+              </span>
+              <h3 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950">
+                {benchmark.name}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">
+                {benchmark.positioning}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs">
+              {benchmark.stats.map((stat) => (
+                <div key={stat.label} className="text-center px-1">
+                  <div className="text-xs font-medium text-slate-500">{stat.label}</div>
+                  <div className="mt-1 text-xs sm:text-sm font-semibold text-slate-900 truncate" title={stat.value}>
+                    {stat.value}
+                  </div>
                 </div>
               ))}
+            </div>
+
+            <div className="space-y-3.5">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs">
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <span className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-700">
+                    <Robot size={15} weight="bold" />
+                  </span>
+                  仿真环境与输入
+                </div>
+                <ul className="mt-2.5 space-y-1.5 text-xs sm:text-sm leading-relaxed text-slate-600">
+                  {benchmark.setup.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-blue-700" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs">
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <span className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-700">
+                    <Cube size={15} weight="bold" />
+                  </span>
+                  任务与资产库
+                </div>
+                <ul className="mt-2.5 space-y-1.5 text-xs sm:text-sm leading-relaxed text-slate-600">
+                  {benchmark.tasks.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-blue-700" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs">
+                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <span className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-700">
+                    <Gauge size={15} weight="bold" />
+                  </span>
+                  评测机制与指标
+                </div>
+                <ul className="mt-2.5 space-y-1.5 text-xs sm:text-sm leading-relaxed text-slate-600">
+                  {benchmark.metrics.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-blue-700" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
           <FigureGallery figureIds={benchmark.figures} label={benchmark.name} />
