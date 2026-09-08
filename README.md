@@ -13,6 +13,12 @@ MDX page while preserving the original source and first-party research media.
 - Motion and selected Magic UI components for restrained interaction
 - Cruip Simple Light as the initial project scaffold
 
+## Deployment
+
+The project is hosted on GitHub Pages:
+
+https://charming0668.github.io/ego/
+
 ## Development
 
 ```bash

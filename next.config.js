@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const isProd = process.env.NODE_ENV === "production";
-const repo = "ego-vla-site-content";
+const repo = "ego";
 const basePath = isProd ? `/${repo}` : "";
 
 const nextConfig = {

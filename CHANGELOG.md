@@ -16,3 +16,4 @@
 - Fixed initial image rendering in figure gallery by bypassing opacity masking and enabling unoptimized SVG/GIF streaming.
 - Removed redundant forward-transfer evaluation metric item from LIBERO specifications per user request.
 - Configured static export with basePath for GitHub Pages and added automated deployment workflow.
+- Renamed GitHub repository to ego and updated basePath configuration accordingly.
