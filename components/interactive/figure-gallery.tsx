@@ -12,11 +12,16 @@ type FigureGalleryProps = {
   label: string;
 };
 
+type GalleryMode = "fixed-height" | "fixed-ratio" | "smooth-height";
+
 export default function FigureGallery({ figureIds, label }: FigureGalleryProps) {
   const available = figureIds
     .map((id) => figures.find((figure) => figure.id === id))
     .filter((figure): figure is NonNullable<typeof figure> => Boolean(figure));
   const [activeIndex, setActiveIndex] = useState(0);
+  const [mode, setMode] = useState<GalleryMode>("fixed-height");
+  const [smoothHeight, setSmoothHeight] = useState<number | undefined>(undefined);
+  const contentRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const active = available[activeIndex] ?? available[0];
   const figureKey = figureIds.join(":");
@@ -24,6 +29,19 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
   useEffect(() => {
     setActiveIndex(0);
   }, [figureKey]);
+
+  useEffect(() => {
+    if (mode !== "smooth-height" || !contentRef.current) return;
+    const update = () => {
+      if (contentRef.current) {
+        setSmoothHeight(contentRef.current.offsetHeight);
+      }
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, [mode, active.id]);
 
   if (!active) {
     return (
@@ -35,18 +53,76 @@ export default function FigureGallery({ figureIds, label }: FigureGalleryProps) 
 
   return (
     <div>
-      <div className="group relative flex min-h-[320px] sm:min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-3 sm:p-4 shadow-xs">
-        <Image
-          key={active.id}
-          src={withBasePath(active.src)}
-          alt={active.alt}
-          width={1800}
-          height={1080}
-          priority
-          sizes="(max-width: 768px) 100vw, 95vw"
-          unoptimized={active.src.endsWith(".gif") || active.src.endsWith(".svg")}
-          className="h-auto max-h-[720px] w-full object-contain"
-        />
+      {/* Mode Switcher */}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/80 bg-slate-100/70 p-1 text-xs">
+          <span className="hidden px-2 text-slate-500 sm:inline">防跳动模式:</span>
+          <button
+            type="button"
+            onClick={() => setMode("fixed-height")}
+            className={cn(
+              "rounded-lg px-2.5 py-1 font-medium transition-colors",
+              mode === "fixed-height"
+                ? "bg-white font-semibold text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900",
+            )}
+          >
+            方案一：锁定高度 (推荐)
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("fixed-ratio")}
+            className={cn(
+              "rounded-lg px-2.5 py-1 font-medium transition-colors",
+              mode === "fixed-ratio"
+                ? "bg-white font-semibold text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900",
+            )}
+          >
+            方案二：16:9 比例
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("smooth-height")}
+            className={cn(
+              "rounded-lg px-2.5 py-1 font-medium transition-colors",
+              mode === "smooth-height"
+                ? "bg-white font-semibold text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900",
+            )}
+          >
+            方案三：平滑缓动
+          </button>
+        </div>
+      </div>
+
+      <div
+        style={mode === "smooth-height" && smoothHeight ? { height: smoothHeight } : undefined}
+        className={cn(
+          "group relative flex items-center justify-center overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition-[height] duration-300 ease-out",
+          mode === "fixed-height" && "h-[360px] sm:h-[520px] lg:h-[600px] w-full p-3 sm:p-4",
+          mode === "fixed-ratio" && "aspect-[16/9] w-full max-h-[700px] p-3 sm:p-4",
+          mode === "smooth-height" && "w-full p-3 sm:p-4",
+        )}
+      >
+        <div ref={contentRef} className="flex h-full w-full items-center justify-center">
+          <Image
+            key={active.id}
+            src={withBasePath(active.src)}
+            alt={active.alt}
+            width={1800}
+            height={1080}
+            priority
+            sizes="(max-width: 768px) 100vw, 95vw"
+            unoptimized={active.src.endsWith(".gif") || active.src.endsWith(".svg")}
+            className={cn(
+              "object-contain",
+              mode === "fixed-height" && "h-full w-full",
+              mode === "fixed-ratio" && "h-full w-full",
+              mode === "smooth-height" && "h-auto max-h-[720px] w-full",
+            )}
+          />
+        </div>
         <button
           type="button"
           onClick={() => dialogRef.current?.showModal()}
