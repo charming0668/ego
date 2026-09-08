@@ -16,7 +16,7 @@ export default function BenchmarkSwitcher() {
     <section id="benchmarks" className="scroll-mt-20 border-b border-slate-200 bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="从单臂标尺到双臂迁移"
+          title="Benchmark"
           description="LIBERO 适合标准化对标，RoboTwin 2.0 更接近双臂协作与 Sim-to-Real。"
         />
 

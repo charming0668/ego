@@ -19,3 +19,4 @@
 - Renamed GitHub repository to ego and updated basePath configuration accordingly.
 - Upgraded method explorer to a full-width hero gallery with supporting parameter dashboard.
 - Finalized Scheme 1: locked exhibition gallery height to eliminate Cumulative Layout Shift (CLS).
+- Updated benchmark section title to Benchmark.
