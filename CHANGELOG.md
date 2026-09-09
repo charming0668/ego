@@ -20,3 +20,4 @@
 - Upgraded method explorer to a full-width hero gallery with supporting parameter dashboard.
 - Finalized Scheme 1: locked exhibition gallery height to eliminate Cumulative Layout Shift (CLS).
 - Updated benchmark section title to Benchmark.
+- Implemented 3 interactive comparison views: Full Panoramic Matrix (Linear style), 1v1 Diff Compare (Apple/GitHub style), and Modular Spec Cards (Vercel style).
