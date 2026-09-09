@@ -21,3 +21,4 @@
 - Finalized Scheme 1: locked exhibition gallery height to eliminate Cumulative Layout Shift (CLS).
 - Updated benchmark section title to Benchmark.
 - Deepened contrast of comparison table text to slate-900 and slate-950 for improved readability.
+- Replaced static zoom button with zoom-in cursor trigger and interactive wheel-zoom/pan lightbox modal.
