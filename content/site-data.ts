@@ -18,6 +18,17 @@ export type Source = {
 export type MathSegment = { math: string };
 export type RichText = string | Array<string | MathSegment>;
 
+export type FormulaVariable = {
+  symbol: string;
+  meaning: string;
+  detail: string;
+};
+
+export type FormulaExplanation = {
+  intuition: string;
+  variables: FormulaVariable[];
+};
+
 export type Method = {
   id: string;
   name: string;
@@ -29,6 +40,7 @@ export type Method = {
   deployment: string;
   keyNumbers: string[];
   formulas: string[];
+  explanation?: FormulaExplanation;
   figures: string[];
   caveats: string[];
 };
@@ -103,6 +115,14 @@ export const methods: Method[] = [
     deployment: "MANO 经 IK 得到 EEF，指尖映射到机器人手关节。",
     keyNumbers: ["30 Hz", "30-step chunk", "48-D action"],
     formulas: [String.raw`\mathcal{L}=20\mathcal{L}_{\mathrm{ee}}+5\mathcal{L}_{\mathrm{hand}}+5\mathcal{L}_{\mathrm{rot}}`],
+    explanation: {
+      intuition: "优先保证末端执行器精准到点，手部关节点与旋转姿态作为微调辅助",
+      variables: [
+        { symbol: String.raw`\mathcal{L}_{\mathrm{ee}}`, meaning: "末端平移误差 (权重 20)", detail: "直接决定夹爪能否触达目标物体，赋予最高优化权重" },
+        { symbol: String.raw`\mathcal{L}_{\mathrm{hand}}`, meaning: "MANO 手关节误差 (权重 5)", detail: "30 维人手关键点姿态，指导手指抓握形状微调" },
+        { symbol: String.raw`\mathcal{L}_{\mathrm{rot}}`, meaning: "手腕旋转误差 (权重 5)", detail: "12 维连续 6D 旋转位姿，约束夹爪对齐方向" },
+      ],
+    },
     figures: ["egovla-teaser", "egovla-instruction", "egovla-pipeline", "egovla-align"],
     caveats: ["部署时需要 MANO 到目标机器人本体的 IK 和手部 retarget。"],
   },
@@ -122,6 +142,14 @@ export const methods: Method[] = [
     deployment: "机器人阶段改用机器人 action 维度，不能直接复用人手 48-D 头。",
     keyNumbers: ["48-D state/action", "16-step horizon", "[-1,1] normalization"],
     formulas: [String.raw`\mathbf{x}_t=t\mathbf{a}+(1-t)\boldsymbol{\varepsilon}`, String.raw`\mathrm{MSE}(\hat{\mathbf{v}},\mathbf{a}-\boldsymbol{\varepsilon})`],
+    explanation: {
+      intuition: "从高斯随机先验噪声沿直线轨迹单调插值生成连续动作",
+      variables: [
+        { symbol: String.raw`\mathbf{a}`, meaning: "真实动作目标 (48 维)", detail: "双臂末端 6D 位姿与双手多关键点联合轨迹" },
+        { symbol: String.raw`\boldsymbol{\varepsilon}`, meaning: "高斯先验噪声", detail: "从标准正态分布采样的初始连续潜变量" },
+        { symbol: String.raw`\hat{\mathbf{v}}`, meaning: "预测流场速度", detail: "DiT 网络拟合的向量场速度，通过欧拉积分输出动作" },
+      ],
+    },
     figures: ["hrdt-overview", "hrdt-framework"],
     caveats: ["ARKit origin 不是当前相机系，跨数据集拼接前必须显式变换。"],
   },
@@ -151,6 +179,14 @@ export const methods: Method[] = [
     deployment: "输出未来 H 步双臂 EEF 增量、底盘导航与夹爪开合。",
     keyNumbers: ["H-step horizon", "双臂 12-D EEF", "3-D navigation"],
     formulas: [String.raw`\mathbf{u}_t=\boldsymbol{\varepsilon}-\mathbf{a}`, String.raw`\mathrm{MSE}(\hat{\mathbf{v}}_t,\mathbf{u}_t)`],
+    explanation: {
+      intuition: "流匹配动力学统一建模双臂末端增量、全身导航与手部开合",
+      variables: [
+        { symbol: String.raw`\mathbf{a}`, meaning: "复合动作真值", detail: "包含双臂 12 维 EEF + 3 维底盘导航 + 躯干与夹爪" },
+        { symbol: String.raw`\mathbf{u}_t`, meaning: "条件向量场方向", detail: "定义噪声 ε 到动作 a 的单调位移速度基准" },
+        { symbol: String.raw`\hat{\mathbf{v}}_t`, meaning: "策略网络流场输出", detail: "人机样本混合加权监督下的多模态连续动作向量" },
+      ],
+    },
     figures: ["egohumanoid-teaser", "egohumanoid-hardware", "egohumanoid-view-align", "egohumanoid-alignment"],
     caveats: ["论文页面未固定 H 的数值；视角重投影和 inpaint 是数据管线的一部分。"],
   },
@@ -169,6 +205,14 @@ export const methods: Method[] = [
     deployment: "人手关键点转夹爪位姿，经过基座搜索、MuJoCo IK 与视觉合成后直接占用同一 80-D 槽位。",
     keyNumbers: ["80-D canonical", "15 embodiments", "4-step Euler inference"],
     formulas: [String.raw`\mathbf{k}_{\mathrm{vf}}=0.7\mathbf{k}_{\mathrm{index}}+0.3\mathbf{k}_{\mathrm{middle}}`, String.raw`\mathbf{x}_t=(1-t)\boldsymbol{\varepsilon}+t\mathbf{a}`],
+    explanation: {
+      intuition: "以食指中指合力中心定义虚拟接触锚点，映射为人手到平面对称夹爪",
+      variables: [
+        { symbol: String.raw`\mathbf{k}_{\mathrm{vf}}`, meaning: "虚拟指尖锚点", detail: "0.7 食指 + 0.3 中指加权，将五指捏合投影为二指夹爪接触面" },
+        { symbol: String.raw`\mathbf{x}_t`, meaning: "流场插值状态", detail: "80 维统一通用动作槽位在扩散时步 t 的线性状态" },
+        { symbol: String.raw`\lambda=0.1`, meaning: "联合任务平衡系数", detail: "约 9:1 的 VLA 动作生成与多模态 VLM 语言预训练损失平衡" },
+      ],
+    },
     figures: ["qwen-overview", "ego2robot-pipeline", "qwen-h2r"],
     caveats: ["Ego2Robot 图和视频来自项目页，不是 Qwen 论文原图。", "动作 chunk 长度 T 与输入固定分辨率未给出。"],
   },
@@ -186,6 +230,14 @@ export const methods: Method[] = [
     deployment: "相对腕直接监督 EEF；手部 decoder 可从 Sharpa 22-DoF 换到低自由度本体。",
     keyNumbers: ["20,854 h + 829 h Stage I", "344 tasks", "22-DoF hand"],
     formulas: [String.raw`\mathbf{W}_{w}^{t}=\mathbf{T}_{w\leftarrow c}^{t}\mathbf{H}_{c,1}^{t}`, String.raw`\Delta\mathbf{W}^{t}=(\mathbf{W}_{w}^{0})^{-1}\mathbf{W}_{w}^{t}`],
+    explanation: {
+      intuition: "以 Chunk 首帧手腕位姿为世界系基准求逆，彻底消除 SLAM 全局累积漂移",
+      variables: [
+        { symbol: String.raw`\mathbf{W}_w^t`, meaning: "世界系绝对腕位姿", detail: "经由头显 SLAM 相机变换计算出的世界系手腕真实位姿" },
+        { symbol: String.raw`\Delta\mathbf{W}^t`, meaning: "相对手腕动作增量", detail: "首帧位姿逆乘当前位姿，直接监督机器人 EEF 相对动作" },
+        { symbol: String.raw`\mathbf{T}_{w\leftarrow c}^t`, meaning: "SLAM 相机跟踪矩阵", detail: "头戴传感器在各时步估计的相机到世界系时变变换" },
+      ],
+    },
     figures: ["egoscale-ego-data", "egoscale-architecture"],
     caveats: ["论文未给出具体 VLM、图像 token 数、chunk 长度 H 和 flow matching 公式细节。"],
   },

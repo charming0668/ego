@@ -4,6 +4,7 @@ import { useState } from "react";
 import katex from "katex";
 
 import FigureGallery from "@/components/interactive/figure-gallery";
+import FormulaCard from "@/components/interactive/formula-card";
 import MathText from "@/components/math-text";
 import SectionHeading from "@/components/sections/section-heading";
 import { methods } from "@/content/site-data";
@@ -144,20 +145,10 @@ export default function MethodExplorer() {
               </div>
 
               {/* 核心公式 */}
-              <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-5 shadow-2xs">
-                <span className="text-xs font-semibold text-slate-500">
-                  核心训练目标 / 公式
-                </span>
-                <div className="mt-3 space-y-2">
-                  {method.formulas.map((formula) => (
-                    <div
-                      key={formula}
-                      className="overflow-x-auto rounded-lg border border-slate-200/80 bg-slate-50 px-3 py-2 text-slate-900"
-                      dangerouslySetInnerHTML={{ __html: renderFormula(formula) }}
-                    />
-                  ))}
-                </div>
-              </div>
+              <FormulaCard
+                formulas={method.formulas}
+                explanation={method.explanation}
+              />
             </div>
 
             {/* Foldable details */}
