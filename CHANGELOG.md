@@ -22,4 +22,4 @@
 - Updated benchmark section title to Benchmark.
 - Deepened contrast of comparison table text to slate-900 and slate-950 for improved readability.
 - Replaced static zoom button with zoom-in cursor trigger and interactive wheel-zoom/pan lightbox modal.
-- Added comprehensive formula explanations with interactive 3-mode switcher (Inline Intuition, Hover Tooltip, and Expandable Drawer).
+- Finalized formula explanations with the clean expandable disclosure drawer layout.
